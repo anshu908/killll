@@ -27,7 +27,7 @@ def send_welcome(message):
         InlineKeyboardButton("ᴡєʙsɪᴛє", url="https://anshu908.github.io/web-service-miini/") 
     ) 
     keyboard.add( 
-        InlineKeyboardButton("ᴄσηᴛᴧᴄᴛ", url="https://t.me/@cyber_ansh") 
+        InlineKeyboardButton("ᴄσηᴛᴧᴄᴛ", url="https://t.me/cyber_ansh") 
     ) 
      
     # Sending the image with caption and buttons 
