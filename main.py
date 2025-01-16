@@ -1,5 +1,5 @@
 from flask import Flask, request
-from telebot import TeleBot
+from telebot import TeleBot, types
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import requests
 
@@ -53,30 +53,40 @@ def send_welcome(message):
 # Webhook route for handling updates
 @app.route('/', methods=['POST'])
 def webhook():
-    json_string = request.get_data().decode('utf-8')
-    bot.process_new_updates([telebot.types.Update.de_json(json_string)])
+    try:
+        json_string = request.get_data().decode('utf-8')
+        update = types.Update.de_json(json_string)
+        bot.process_new_updates([update])
+    except Exception as e:
+        return f"Error processing update: {e}", 500
     return "OK", 200
 
 
 # Set webhook
 @app.route('/set_webhook', methods=['GET'])
 def set_webhook():
-    set_hook = bot.set_webhook(WEBHOOK_URL)
-    if set_hook:
-        return "Webhook set successfully!", 200
-    else:
-        return "Failed to set webhook", 500
+    try:
+        set_hook = bot.set_webhook(WEBHOOK_URL)
+        if set_hook:
+            return "Webhook set successfully!", 200
+        else:
+            return "Failed to set webhook", 500
+    except Exception as e:
+        return f"Error setting webhook: {e}", 500
 
 
 # Verify webhook
 @app.route('/verify_webhook', methods=['GET'])
 def verify_webhook():
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/getWebhookInfo"
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.json(), 200
-    else:
-        return "Failed to verify webhook", 500
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.json(), 200
+        else:
+            return f"Failed to verify webhook: {response.text}", 500
+    except Exception as e:
+        return f"Error verifying webhook: {e}", 500
 
 
 if __name__ == '__main__':
